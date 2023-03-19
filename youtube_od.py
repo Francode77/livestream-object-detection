@@ -22,6 +22,18 @@ boxes = torch.tensor([[0., 1., 2., 3.]]).to(device)
 scores = torch.randn(1).to(device)
 iou_thresholds = 0.5
 
+
+# YoloV5
+
+# load pretrained model
+model = yolov5.load('/yolov5/yolov5s.pt')
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model.to(device) 
+
+# Extract model names 
+print (model.names)
+model.names[0]='Person'
+
 values=[]
 videos=[]
 x=int(0)
@@ -85,13 +97,6 @@ if variable:
     fps = capture.get(cv2.CAP_PROP_FPS)
     print (fps)
 
-    # YoloV5
-
-    # load pretrained model
-    model = yolov5.load('/yolov5/yolov5s.pt')
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model.to(device) 
-
     # Print the frames in same window
     image_place = st.empty()
     capture = cv2.VideoCapture(desired_resolution.url)
@@ -104,16 +109,28 @@ if variable:
         boxes = predictions[:, :4] # x1, y1, x2, y2
         scores = predictions[:, 4]
         categories = predictions[:, 5] 
+        names=results.pandas().xyxy[0]['name'] # Pandas core series
+        objects=len(predictions)
+        object_labels=names.value_counts().to_dict()
+        #persons=names.count('Person')
+
 
         # Draw the bounding boxes on the frame
-        for box, score, category in zip(boxes, scores, categories):
+        for box, score, category, name in zip(boxes, scores, categories,names):
             x1, y1, x2, y2 = box
             x1=int(x1)
             x2=int(x2)
             y1=int(y1)
             y2=int(y2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-            cv2.putText(frame, f"{category.item()} {score.item():.2f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.63, (255, 255, 255), 1)
+            cv2.rectangle(frame, (20, 5), (20 + 230, 5 + 30 * (len(object_labels)+2)+5), (0,0,0), -1)
+            cv2.putText(frame, f"{name} {score.item():.2f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.63, (255, 255, 255), 3)
+            cv2.putText(frame, f"FPS: {fps}", (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.63, (255, 255, 255), 3)
+            cv2.putText(frame, f"Objects detected: {objects}", (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.63, (255, 255, 255), 3)
+            object_label_counter=0
+            for index,object_label in enumerate(object_labels):
+                cv2.putText(frame, f"{object_label}: {object_labels[object_label]}", (30, 90+ object_label_counter), cv2.FONT_HERSHEY_SIMPLEX, 0.63, (255, 255, 255), 3)
+                object_label_counter+=30
             
         # Show the frame with bounding boxes
         image_place.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
