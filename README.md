@@ -21,7 +21,7 @@
 `
 # Usage 
 
-type `streamlit run youtube_od.py' in terminal
+type `streamlit run youtube_od.py` in terminal
 
 # Method
  
