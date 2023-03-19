@@ -1,0 +1,142 @@
+import cv2, pafy
+import streamlit as st
+import yolov5
+import torchvision
+import torch 
+import time 
+
+variable = None
+
+st.title('Livestream object detection')
+
+def set_variable(value):
+    global variable
+    variable = value
+
+if variable:
+    st.write("Variable is set to:", variable)
+    # run code with variable
+
+device = 'cuda'
+boxes = torch.tensor([[0., 1., 2., 3.]]).to(device)
+scores = torch.randn(1).to(device)
+iou_thresholds = 0.5
+
+values=[]
+videos=[]
+x=int(0)
+
+urls=['https://www.youtube.com/watch?v=hIJs5p7ND0g',
+'https://www.youtube.com/watch?v=1-iS7LArMPA',
+'https://www.youtube.com/watch?v=CvOB-Is_yYU']
+
+videostream=urls[0]
+
+for url in urls:
+    # Use pafy to get videostream from youtube
+    videos.append(pafy.new(url))
+    # getting thumbnail of the video
+    values.append(videos[x].thumb)
+    x+=1
+
+# Create a sidebar for overview    
+x=int(0)
+st.sidebar.title("Youtube streams") 
+for value in values:
+    st.sidebar.image(value)
+    if st.sidebar.button(f"Stream {x}",x):
+        set_variable(urls[x]) 
+    x+=1
+
+# Catch the stop button
+if st.button('Stop'):
+    st.stop()
+
+# Wait for input, if a button is pressed, variable will have the value of the clicked button
+if variable:
+
+    videostream=variable
+    video=pafy.new(videostream)
+
+    # Print all available streams
+    streams = video.allstreams 
+    for s in streams:
+        print(s)
+
+    #best  = video.getbest() 
+    #print (best.resolution, best.extension)  
+
+    # Search for a resolution
+    desired_resolution = None
+    for s in video.allstreams:
+        if s.resolution == '640x360':
+            desired_resolution = s
+            break
+
+    if desired_resolution:
+        print(desired_resolution.resolution)
+        #best_resolution.download()
+    else:
+        print("No video stream matches the specified resolution")
+
+    # Capture with OpenCV
+    capture = cv2.VideoCapture(desired_resolution.url)
+    capture.set(cv2.CAP_PROP_FPS, 10)
+    fps = capture.get(cv2.CAP_PROP_FPS)
+    print (fps)
+
+    # YoloV5
+
+    # load pretrained model
+    model = yolov5.load('/yolov5/yolov5s.pt')
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model.to(device) 
+
+    # Print the frames in same window
+    image_place = st.empty()
+    capture = cv2.VideoCapture(desired_resolution.url)
+    while True:
+        check, frame = capture.read() 
+        frame = cv2.resize(frame, (1280, 720), interpolation = cv2.INTER_LINEAR)
+        results=model(frame)
+        # Parse results
+        predictions = results.pred[0]
+        boxes = predictions[:, :4] # x1, y1, x2, y2
+        scores = predictions[:, 4]
+        categories = predictions[:, 5] 
+
+        # Draw the bounding boxes on the frame
+        for box, score, category in zip(boxes, scores, categories):
+            x1, y1, x2, y2 = box
+            x1=int(x1)
+            x2=int(x2)
+            y1=int(y1)
+            y2=int(y2)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            cv2.putText(frame, f"{category.item()} {score.item():.2f}", (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 0.63, (255, 255, 255), 1)
+            
+        # Show the frame with bounding boxes
+        image_place.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
+        #time.sleep(.05)
+    
+    capture.release()
+    cv2.destroyAllWindows() 
+
+else:
+    with st.empty():
+        for seconds in range(60):
+            st.write(f"⏳ Please choose a stream")
+            time.sleep(0.31)
+            st.write(f"⏳ Please choose a stream .")
+            time.sleep(0.31)
+            st.write(f"⏳ Please choose a stream ..")
+            time.sleep(0.31)
+            st.write(f"⏳ Please choose a stream ...")
+            time.sleep(0.31)
+            st.write(f"⏳ Please choose a stream ....")
+
+st.text(torch.cuda.is_available())
+st.text(torch.__version__)
+st.text(torch.version.cuda)
+st.text(torchvision.__version__)
