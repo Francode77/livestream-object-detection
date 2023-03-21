@@ -18,7 +18,8 @@ if variable:
     st.write("Variable is set to:", variable)
     # run code with variable
 
-device = 'cuda'
+# Use GPU if available, else use CPU
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 boxes = torch.tensor([[0., 1., 2., 3.]]).to(device)
 scores = torch.randn(1).to(device)
 iou_thresholds = 0.5
@@ -27,7 +28,6 @@ iou_thresholds = 0.5
 
 # load pretrained model
 model = yolov5.load('/yolov5/yolov5s.pt')
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)  
 
 values=[]
