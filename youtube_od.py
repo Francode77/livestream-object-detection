@@ -10,7 +10,7 @@ import wget
 @st.cache
 def loadModel():
     start_dl = time.time()
-    model_file = wget.download('https://github.com/Francode77/livestream-object-detection/blob/main/model/yolov5s.pt', out="models/")
+    model_file = wget.download('https://github.com/Francode77/livestream-object-detection/blob/main/model/yolov5s.pt', out="model/")
     finished_dl = time.time()
     print(f"Model Downloaded, ETA:{finished_dl-start_dl}")
 loadModel()
@@ -40,7 +40,7 @@ iou_thresholds = 0.5
 #model = yolov5.load('/model/yolov5s.pt')
 
 # load pretrained model on streamlit
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/yolov5s.pt', force_reload=True) 
+#model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/yolov5s.pt', force_reload=True) 
 model.to(device)  
 
 values=[]
