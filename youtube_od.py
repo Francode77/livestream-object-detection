@@ -5,6 +5,16 @@ import yolov5
 import torchvision
 import torch 
 import time 
+import wget
+     
+@st.cache
+def loadModel():
+    start_dl = time.time()
+    model_file = wget.download('https://github.com/Francode77/livestream-object-detection/blob/main/model/yolov5s.pt', out="models/")
+    finished_dl = time.time()
+    print(f"Model Downloaded, ETA:{finished_dl-start_dl}")
+loadModel()
+
 
 variable = None
 
