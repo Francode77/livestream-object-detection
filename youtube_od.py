@@ -37,7 +37,7 @@ iou_thresholds = 0.5
 # YoloV5
 
 # load pretrained model locally
-#model = yolov5.load('/model/yolov5s.pt')
+model = yolov5.load('/model/yolov5s.pt')
 
 # load pretrained model on streamlit
 #model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/yolov5s.pt', force_reload=True) 
