@@ -27,7 +27,7 @@ iou_thresholds = 0.5
 # YoloV5
 
 # load pretrained model
-model = yolov5.load('/yolov5/yolov5s.pt')
+model = yolov5.load('/model/yolov5s.pt')
 model.to(device)  
 
 values=[]
