@@ -48,7 +48,6 @@ numpy==1.24.2
 oauthlib==3.2.2
 opencv-python==4.7.0.72
 packaging==23.0
-pafy @ git+https://github.com/Francode77/pafy-update-2023@069b538c6047f8d98aeae89c685c3b4b7207954f
 pandas==1.5.3
 parso==0.8.3
 pickleshare==0.7.5
