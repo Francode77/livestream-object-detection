@@ -22,17 +22,12 @@ boxes = torch.tensor([[0., 1., 2., 3.]]).to(device)
 scores = torch.randn(1).to(device)
 iou_thresholds = 0.5
 
-
 # YoloV5
 
 # load pretrained model
 model = yolov5.load('/yolov5/yolov5s.pt')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model.to(device) 
-
-# Extract model names 
-print (model.names)
-model.names[0]='Person'
+model.to(device)  
 
 values=[]
 videos=[]
@@ -95,7 +90,6 @@ if variable:
     capture = cv2.VideoCapture(desired_resolution.url)
     capture.set(cv2.CAP_PROP_FPS, 10)
     fps = capture.get(cv2.CAP_PROP_FPS)
-    print (fps)
 
     # Print the frames in same window
     image_place = st.empty()
@@ -109,11 +103,9 @@ if variable:
         boxes = predictions[:, :4] # x1, y1, x2, y2
         scores = predictions[:, 4]
         categories = predictions[:, 5] 
-        names=results.pandas().xyxy[0]['name'] # Pandas core series
+        names=results.pandas().xyxy[0]['name'] # Pandas series
         objects=len(predictions)
         object_labels=names.value_counts().to_dict()
-        #persons=names.count('Person')
-
 
         # Draw the bounding boxes on the frame
         for box, score, category, name in zip(boxes, scores, categories,names):
@@ -141,8 +133,8 @@ if variable:
     cv2.destroyAllWindows() 
 
 else:
-    with st.empty():
-        for seconds in range(60):
+    with st.empty(): 
+        while True:
             st.write(f"⏳ Please choose a stream")
             time.sleep(0.31)
             st.write(f"⏳ Please choose a stream .")
@@ -157,3 +149,9 @@ st.text(torch.cuda.is_available())
 st.text(torch.__version__)
 st.text(torch.version.cuda)
 st.text(torchvision.__version__)
+
+"""True
+1.13.1+cu117
+11.7
+0.14.1+cu117
+"""
