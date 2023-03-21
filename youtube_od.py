@@ -1,4 +1,5 @@
-import cv2, pafy
+import cv2
+import pafy
 import streamlit as st
 import yolov5
 import torchvision
