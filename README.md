@@ -4,7 +4,9 @@
 *This is a personal project to learn using computer vision object detection.*
 
 ## Project Description:
- Live object detection on a youtube livestream with Yolo. This program will run locally in a web browser.
+ Live object detection on a youtube livestream with Yolov5. The app runs locally in a web browser.
+
+[A demo version](https://francode77-livestream-object-detection-youtube-od-24bdil.streamlit.app/) is online on Streamlit cloud.
  
 # Requirements
   
@@ -29,7 +31,7 @@ type `streamlit run youtube_od.py` in terminal
 
 # Results
 
- Here is a screenshot of this version
+ Here is a screenshot of the current version
  
   ![Screenshot](https://github.com/Francode77/livestream-object-detection/blob/main/assets/screenshot.jpg)
  
